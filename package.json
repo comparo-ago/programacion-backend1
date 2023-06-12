@@ -9,21 +9,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OctavioRS/clases.git"
+    "url": "git+https://github.com/comparo-ago/programacion-backend1.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/OctavioRS/clases/issues"
+    "url": "https://github.com/comparo-ago/programacion-backend1/issues"
   },
-  "homepage": "https://github.com/OctavioRS/clases#readme",
+  "homepage": "https://github.com/comparo-ago/programacion-backend1#readme",
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^7.0.7",
     "handlebars": "^4.7.7",
-    "mongoose": "^7.2.2",
+    "mongoose": "^7.2.4",
+    "mongoose-paginate-v2": "^1.7.1",
     "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
     "socket.io": "^4.6.1"
   }
 }
