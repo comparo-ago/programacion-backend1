@@ -28,45 +28,42 @@ const productManager = new ProductManager('../productos.json');
 const app = express();
 const port = 8080;
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
+app.use(session({
+  secret: 'sessionKey',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 10000
+  },
+  store: new mongoStore({
+    mongoUrl: 'mongodb+srv://octavio:octavio@clusterecommerce.xka9yxf.mongodb.net/Ecommerce?retryWrites=true&w=majority',
+    ttl: 10322,
+  }),
+})
+)
+
+app.use(passport.initialize());
+app.use(passport.session())
 //app.use('/api/products' , productsRoute)
 //app.use('/api/carts' , cartRoute)
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.engine('handlebars', handlebars.engine())
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars')
-//app.use('/', viewsRouter)
+//app.use('/', productViews)
 
 app.use('/products', productmongoRouter)
 app.use('/messages', messagemongoRouter)
 app.use('/carts', cartsmongoRouter)
 
-app.use(
-  session({
-    secret: 'sessionKey',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 10000
-    },
-    store: new MongoStore({
-      mongoUrl: 'mongodb+srv://octavio:octavio@clusterecommerce.xka9yxf.mongodb.net/Ecommerce?retryWrites=true&w=majority',
-       autoRemoveInterval: 1,
-      //autoRemove: "interval",
-      //ttl: 10,
-      // crypto: {
-      //   secret: '1234',       //encripta los datos de la sesion
-      // },
-    }),
-  })
-)
+app.use('/users', usersRouter)
+app.use('/views', viewsRouter)
 
-app.use('/users',usersRouter)
-app.use('/views',viewsRouter)
 
 const httpServer = app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
@@ -77,22 +74,22 @@ const socketServer = new Server(httpServer)
 socketServer.on("connection", (socket) => {
   console.log(`Client connected: ${socket.id}`);
 
-socket.on('newProduct', async (obj) => {
-  await productManager.addProduct({
-    title: obj.title,
-    description: obj.description,
-    price: obj.price,
+  socket.on('newProduct', async (obj) => {
+    await productManager.addProduct({
+      title: obj.title,
+      description: obj.description,
+      price: obj.price,
+    });
+    const products = await productManager.getProducts();
+    socketServer.emit('arrayProducts', products);
   });
-  const products = await productManager.getProducts();
-  socketServer.emit('arrayProducts', products);
-});
 
 
-socket.on('deleteProduct', async (id) => {
-  await productManager.deleteProduct(id);
-  const products = await productManager.getProducts();
-  socketServer.emit('arrayProducts', products);
-});
+  socket.on('deleteProduct', async (id) => {
+    await productManager.deleteProduct(id);
+    const products = await productManager.getProducts();
+    socketServer.emit('arrayProducts', products);
+  });
 
 
 });
