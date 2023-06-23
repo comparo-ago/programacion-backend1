@@ -53,8 +53,8 @@ app.use(
     cookie: {
       maxAge: 10000
     },
-    store: new MongoStore({
-      mongoUrl: 'mongodb+srv://octavio:octavio@clusterecommerce.xka9yxf.mongodb.net/Ecommerce?retryWrites=true&w=majority',
+    store: new mongoStore({
+      mongoUrl: 'mongodb+srv://admin:A34990151m@cluster0.tjkz8k7.mongodb.net/?retryWrites=true&w=majority',
        autoRemoveInterval: 1,
       //autoRemove: "interval",
       //ttl: 10,
