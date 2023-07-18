@@ -1,4 +1,4 @@
-import CartsDaoMongoDB from '../../../programacion-backend/src/daos/mongo/carts.dao.js'
+import CartsDaoMongoDB from '../daos/mongo/carts.dao.js'
 
 const cartDaoMongo = new CartsDaoMongoDB();
 

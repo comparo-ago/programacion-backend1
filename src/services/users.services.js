@@ -1,4 +1,4 @@
-import UserDao from '../../../programacion-backend/src/daos/mongo/user.dao.js'
+import UserDao from '../daos/mongo/user.dao.js'
 
 const usersDaoMongo = new UserDao();
 
