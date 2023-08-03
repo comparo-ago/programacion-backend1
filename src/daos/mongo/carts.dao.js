@@ -1,5 +1,6 @@
 import { cartsModel } from '../models/carts.models.js'
 import { productModel } from '../models/products.models.js';
+import { userModel } from '../models/user.models.js';
 class CartsDaoMongoDB {
 
     async getAllCarts() {
@@ -7,7 +8,7 @@ class CartsDaoMongoDB {
             const response = await cartsModel.find({});
             return response;
         } catch (error) {
-            console.log(error);
+            throw new Error(error)
         }
     }
 
@@ -16,27 +17,28 @@ class CartsDaoMongoDB {
             const response = await cartsModel.create(obj);
             return response;
         } catch (error) {
-            console.log(error);
+            throw new Error(error)
         }
     }
 
     async getCartById(cid) {
         try {
-            const response = await cartsModel.findById({ _id: cid }).populate('products._id')
-            return response
+            const response = await cartsModel.findById(cid).populate('products.productId');
+            return response;
         } catch (error) {
-            console.log(error);
+            throw new Error(error)
         }
     }
+
 
     async addProductToCart(cid, pid) {
         try {
             const cart = await cartsModel.findById(cid);
             cart.products.push(pid);
             cart.save()
-            
+
         } catch (error) {
-            console.log(error);
+            throw new Error(error)
         }
     };
 
@@ -59,8 +61,7 @@ class CartsDaoMongoDB {
             await cart.save();
             return cart;
         } catch (error) {
-            console.error(error);
-            throw error;
+            throw new Error(error)
         }
     }
     async deleteAllProductsCart(cid) {
@@ -97,6 +98,31 @@ class CartsDaoMongoDB {
         }
     }
 
+    async updateCart(cart) {
+        const updatedCart = await cartsModel.findByIdAndUpdate(cart._id, { products: cart.products }, { new: true });
+        return updatedCart;
+    } catch(error) {
+        console.error(error);
+        throw new Error('Error updating cart in the database');
+    }
+
+
+    async getCartByUser(userId) {
+        try {
+            const user = await userModel.findOne({ _id: userId }).populate('cart');
+            if (user) {
+                if (user.cart) {
+                    return user.cart;
+                } else {
+                    return { message: 'Cart user not found' };
+                }
+            } else {
+                return { message: 'User not found' };
+            }
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
 }
 
 export default CartsDaoMongoDB

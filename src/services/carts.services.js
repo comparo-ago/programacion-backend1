@@ -1,13 +1,20 @@
 import CartsDaoMongoDB from '../daos/mongo/carts.dao.js'
+import { ticketModel } from '../daos/models/ticket.models.js'
+import { productModel } from '../daos/models/products.models.js';
+import { userModel } from '../daos/models/user.models.js';
+import ProductDaoMongoDB from '../daos/mongo/products.dao.js'
+import { HttpResponse } from '../utils/http.response.js';
+const Httpresponse = new HttpResponse();
 
 const cartDaoMongo = new CartsDaoMongoDB();
+const productDaoMongo = new ProductDaoMongoDB()
 
 export const getCartService = async () => {
   try {
     const docs = await cartDaoMongo.getAllCarts()
     return docs;
   } catch (error) {
-    console.error(error);
+    throw new Error(error)
   }
 }
 
@@ -18,7 +25,7 @@ export const getCartByIdService = async (cid) => {
       return `Cart not found`
     else return data;
   } catch (error) {
-    console.log(error);
+    throw new Error(error)
   }
 }
 
@@ -27,7 +34,7 @@ export const createCartService = async () => {
     const cart = await cartDaoMongo.createCart()
     return cart
   } catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 
@@ -36,7 +43,7 @@ export const addProductToCartService = async (cid, pid) => {
     const doc = await cartDaoMongo.addProductToCart(cid, pid);
     return doc;
   } catch (error) {
-    console.log(error);
+    throw new Error(error)
   }
 }
 export const deleteProductCartService = async (cid, pid) => {
@@ -47,19 +54,18 @@ export const deleteProductCartService = async (cid, pid) => {
     }
     return doc
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error)
   }
 }
 export const updateProductCartService = async (cid, pid, quantity) => {
   try {
     const product = await cartDaoMongo.updateProductCart(cid, pid, quantity);
     if (!product) {
-      throw new Error('Product not found');
+      return Httpresponse.NotFound(res, error)
     }
     return product;
   } catch (error) {
-    console.error(error);
-    throw new Error('Error updating cart');
+    throw new Error(error)
   }
 }
 
@@ -67,10 +73,16 @@ export const deleteAllProductsCartService = async (cid) => {
   try {
     const cart = await cartDaoMongo.deleteAllProductsCart(cid)
     if (!cart) {
-      throw new Error('Products not found');
+      return Httpresponse.NotFound(res, error)
       
     }return cart
   } catch (error) {
-    throw new Error('Error to delete products');
+    throw new Error(error)
   }
 }
+
+
+
+
+
+
